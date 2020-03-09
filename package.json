@@ -2,7 +2,7 @@
     "name": "full-stack-backend",
     "version": "0.1.0",
     "description": "A starting point for Node.js express apps with TypeScript",
-    "author": "Bowden Kelly",
+    "author": "fabioDMFerreira",
     "license": "MIT",
     "scripts": {
         "start:dev": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.test.ts' --exec 'ts-node' -r tsconfig-paths/register src/main.ts",
