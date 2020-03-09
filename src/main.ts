@@ -1,19 +1,39 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { config } from '../config';
+import { checkJwt } from "./infra/authorization/authorization";
+import "reflect-metadata";
+import { InversifyExpressServer } from "inversify-express-utils";
+import { Container } from "inversify";
+import * as express from "express";
 
-async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+import TYPES from "./types";
+import { AlbumRepository } from "./domain/AlbumRepository";
+import { InMemoryAlbumRepository } from "./service/albumRepository/inMemory.album.repository";
+import addExpressMiddlewares from "./infra/addExpressMiddlewares";
+import expressErrorMiddleware from "./infra/error/expressErrorMiddleware";
 
-  const documentOptions = new DocumentBuilder()
-    .setTitle(config.TITLE)
-    .setDescription(config.DESCRIPTION)
-    .setVersion(config.VERSION)
-    .build();
-  const document = SwaggerModule.createDocument(app, documentOptions);
-  SwaggerModule.setup(config.API_EXPLORER_PATH, app, document);
+import { albumControllerFactory } from "./api/album/album.controller";
+import "./api";
 
-  await app.listen(3000);
-}
-bootstrap();
+// load everything needed to the Container
+const container = new Container();
+container.bind<AlbumRepository>(TYPES.AlbumRepository).to(InMemoryAlbumRepository);
+container.bind<express.RequestHandler>(TYPES.AuthorizationMiddleware).toConstantValue(checkJwt);
+
+albumControllerFactory(container);
+
+const server = new InversifyExpressServer(container);
+
+
+// start the server
+const app = server
+  .setConfig(addExpressMiddlewares)
+  .setErrorConfig(expressErrorMiddleware)
+  .build();
+
+app.listen(app.get("port"), () => {
+  console.log(
+    "  App is running at http://localhost:%d in %s mode",
+    app.get("port"),
+    app.get("env")
+  );
+  console.log("  Press CTRL-C to stop\n");
+});
