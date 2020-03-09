@@ -3,6 +3,10 @@
     "version": "0.1.0",
     "description": "A starting point for Node.js express apps with TypeScript",
     "author": "fabioDMFerreira",
+    "engines": {
+        "node": "8.12.0",
+        "npm": "6.4.1"
+    },
     "license": "MIT",
     "scripts": {
         "start:dev": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.test.ts' --exec 'ts-node' -r tsconfig-paths/register src/main.ts",
@@ -13,7 +17,7 @@
         "watch": "concurrently -k -p \"[{name}]\" -n \"Sass,TypeScript,Node\" -c \"yellow.bold,cyan.bold,green.bold\" \"npm run watch-ts\" \"npm run watch-node\"",
         "test": "jest --forceExit --coverage --collectCoverage=true --verbose",
         "watch-test": "npm run test -- --watchAll",
-        "build-ts": "tsc -p tsconfig.production.json",
+        "build-ts": "tsc -p ./tsconfig.production.json",
         "watch-ts": "tsc -w",
         "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
         "debug": "npm run build && npm run watch-debug",
