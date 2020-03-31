@@ -21,12 +21,12 @@ export function albumControllerFactory(container: Container) {
       return this.albumRepository.list();
     }
 
-    @httpGet("/photos")
+    @httpGet("/photos", container.get<RequestHandler>(TYPES.AuthorizationMiddleware))
     public findPhotosGrouppedByAlbum() {
       return this.albumRepository.listPhotosGroupedByAlbum();
     }
 
-    @httpGet("/:id/photos")
+    @httpGet("/:id/photos", container.get<RequestHandler>(TYPES.AuthorizationMiddleware))
     public async getAlbumPhotos(request: Request) {
       return this.albumRepository.listPhotosByAlbum(+request.params.id);
     }
